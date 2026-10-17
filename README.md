@@ -1,6 +1,6 @@
 # zarefrum — портфолио
 
-Сайт-портфолио: https://zarefrum.github.io
+Сайт-портфолио: https://mamakkbrawlstars-hub.github.io
 
 Проекты:
 - **Джарвис** — голосовой ассистент с локальной нейросетью (Python, Rust, Ollama, Vosk, Whisper, Piper)
