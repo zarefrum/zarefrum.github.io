@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UWU — аниме, сериалы, фильмы и игры</title>
+<meta name="description" content="UWU — аниме, сериалы, фильмы и игры в одном списке. Ставь оценки, сравнивай с IMDb, собирай тир-листы и играй с друзьями в ставки на рейтинги.">
+<meta name="theme-color" content="#0b0709">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Manrope:wght@400;500;600;700;800&family=Rubik+Glitch&family=Noto+Sans+JP:wght@700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="red">
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#/all" aria-label="UWU — на главную"><span class="slashes"><i></i><i></i><i></i></span>UWU</a>
+    <nav class="nav" id="nav">
+      <div class="dd" data-dd>
+        <a class="pill" data-nav="all" href="#/all">Всё <span class="car">▾</span></a>
+        <div class="menu" id="menu-all"></div>
+      </div>
+      <div class="dd" data-dd>
+        <a class="pill" data-nav="my" href="#/my/rated">Моё <span class="car">▾</span></a>
+        <div class="menu" id="menu-my"></div>
+      </div>
+      <a class="pill" data-nav="tiers" href="#/tiers">Тир-листы</a>
+      <a class="pill" data-nav="imdb" href="#/imdb">Я и IMDb</a>
+      <a class="pill" data-nav="friends" href="#/friends">Друзья</a>
+      <a class="pill" data-nav="bets" href="#/bets"><span class="ico">◉</span> Ставки</a>
+      <a class="pill" data-nav="shop" href="#/shop"><span class="ico">◈</span> Магазин</a>
+    </nav>
+    <div class="top-r">
+      <span class="coins" id="coins" title="Монеты UWU">0</span>
+      <a class="me" href="#/profile" id="me-btn" aria-label="Мой профиль"></a>
+    </div>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span><b>UWU</b> — фан-проект. Оценки IMDb приблизительные, постеры сгенерированы. Всё хранится у тебя в браузере.</span>
+    <a href="../">← портфолио</a>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" id="modal-box" role="dialog" aria-modal="true"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
