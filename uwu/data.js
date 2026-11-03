@@ -1,0 +1,91 @@
+/* UWU — каталог. Оценки IMDb приблизительные (на 2026 г.). */
+window.UWU_TYPES = {
+  anime:  { ru: 'Аниме',   one: 'аниме',  jp: 'アニメ' },
+  series: { ru: 'Сериалы', one: 'сериал', jp: 'シリーズ' },
+  film:   { ru: 'Фильмы',  one: 'фильм',  jp: 'えいが' },
+  game:   { ru: 'Игры',    one: 'игра',   jp: 'ゲーム' }
+};
+
+/* [название, оригинал, тип, год, IMDb, жанр] */
+window.UWU_DB = [
+  ['Атака титанов', 'Attack on Titan', 'anime', 2013, 9.1, 'экшен'],
+  ['Стальной алхимик: Братство', 'Fullmetal Alchemist: Brotherhood', 'anime', 2009, 9.1, 'приключения'],
+  ['Тетрадь смерти', 'Death Note', 'anime', 2006, 8.9, 'триллер'],
+  ['Ван-Пис', 'One Piece', 'anime', 1999, 9.0, 'приключения'],
+  ['Магическая битва', 'Jujutsu Kaisen', 'anime', 2020, 8.5, 'экшен'],
+  ['Клинок, рассекающий демонов', 'Demon Slayer', 'anime', 2019, 8.6, 'экшен'],
+  ['Ковбой Бибоп', 'Cowboy Bebop', 'anime', 1998, 8.9, 'нуар'],
+  ['Евангелион', 'Neon Genesis Evangelion', 'anime', 1995, 8.5, 'меха'],
+  ['Охотник × Охотник', 'Hunter x Hunter', 'anime', 2011, 9.0, 'приключения'],
+  ['Человек-бензопила', 'Chainsaw Man', 'anime', 2022, 8.4, 'экшен'],
+  ['Врата Штейна', 'Steins;Gate', 'anime', 2011, 8.7, 'фантастика'],
+  ['Провожающая в последний путь Фрирен', 'Frieren', 'anime', 2023, 8.9, 'фэнтези'],
+  ['Ванпанчмен', 'One Punch Man', 'anime', 2015, 8.7, 'комедия'],
+  ['Моб Психо 100', 'Mob Psycho 100', 'anime', 2016, 8.6, 'комедия'],
+  ['Наруто', 'Naruto', 'anime', 2002, 8.4, 'экшен'],
+  ['Код Гиас', 'Code Geass', 'anime', 2006, 8.7, 'меха'],
+  ['Унесённые призраками', 'Spirited Away', 'anime', 2001, 8.6, 'фэнтези'],
+  ['Твоё имя', 'Your Name', 'anime', 2016, 8.4, 'романтика'],
+  ['Киберпанк: Бегущие по краю', 'Cyberpunk: Edgerunners', 'anime', 2022, 8.3, 'киберпанк'],
+  ['Магическая битва 0', 'Jujutsu Kaisen 0', 'anime', 2021, 7.8, 'экшен'],
+
+  ['Во все тяжкие', 'Breaking Bad', 'series', 2008, 9.5, 'драма'],
+  ['Шерлок', 'Sherlock', 'series', 2010, 9.1, 'детектив'],
+  ['Игра престолов', 'Game of Thrones', 'series', 2011, 9.2, 'фэнтези'],
+  ['Очень странные дела', 'Stranger Things', 'series', 2016, 8.7, 'фантастика'],
+  ['Тьма', 'Dark', 'series', 2017, 8.7, 'фантастика'],
+  ['Чернобыль', 'Chernobyl', 'series', 2019, 9.3, 'драма'],
+  ['Аркейн', 'Arcane', 'series', 2021, 9.0, 'анимация'],
+  ['Друзья', 'Friends', 'series', 1994, 8.9, 'комедия'],
+  ['Офис', 'The Office', 'series', 2005, 9.0, 'комедия'],
+  ['Настоящий детектив', 'True Detective', 'series', 2014, 8.9, 'детектив'],
+  ['Лучше звоните Солу', 'Better Call Saul', 'series', 2015, 9.0, 'драма'],
+  ['Пацаны', 'The Boys', 'series', 2019, 8.6, 'экшен'],
+  ['Разделение', 'Severance', 'series', 2022, 8.7, 'триллер'],
+  ['Медведь', 'The Bear', 'series', 2022, 8.5, 'драма'],
+  ['Одни из нас', 'The Last of Us', 'series', 2023, 8.6, 'драма'],
+  ['Уэнсдей', 'Wednesday', 'series', 2022, 8.0, 'мистика'],
+
+  ['Интерстеллар', 'Interstellar', 'film', 2014, 8.7, 'фантастика'],
+  ['Начало', 'Inception', 'film', 2010, 8.8, 'фантастика'],
+  ['Тёмный рыцарь', 'The Dark Knight', 'film', 2008, 9.0, 'экшен'],
+  ['Побег из Шоушенка', 'The Shawshank Redemption', 'film', 1994, 9.3, 'драма'],
+  ['Бойцовский клуб', 'Fight Club', 'film', 1999, 8.8, 'драма'],
+  ['Матрица', 'The Matrix', 'film', 1999, 8.7, 'фантастика'],
+  ['Криминальное чтиво', 'Pulp Fiction', 'film', 1994, 8.9, 'криминал'],
+  ['Волк с Уолл-стрит', 'The Wolf of Wall Street', 'film', 2013, 8.2, 'комедия'],
+  ['Паразиты', 'Parasite', 'film', 2019, 8.5, 'триллер'],
+  ['Дюна: Часть вторая', 'Dune: Part Two', 'film', 2024, 8.5, 'фантастика'],
+  ['Оппенгеймер', 'Oppenheimer', 'film', 2023, 8.3, 'драма'],
+  ['Джокер', 'Joker', 'film', 2019, 8.4, 'драма'],
+  ['Престиж', 'The Prestige', 'film', 2006, 8.5, 'триллер'],
+  ['Остров проклятых', 'Shutter Island', 'film', 2010, 8.2, 'триллер'],
+  ['Мстители: Финал', 'Avengers: Endgame', 'film', 2019, 8.4, 'экшен'],
+  ['Человек-паук: Через вселенные', 'Spider-Man: Into the Spider-Verse', 'film', 2018, 8.4, 'анимация'],
+
+  ['Ведьмак 3: Дикая Охота', 'The Witcher 3: Wild Hunt', 'game', 2015, 9.7, 'RPG'],
+  ['Red Dead Redemption 2', 'Red Dead Redemption 2', 'game', 2018, 9.7, 'вестерн'],
+  ['The Last of Us', 'The Last of Us', 'game', 2013, 9.7, 'экшен'],
+  ['God of War', 'God of War', 'game', 2018, 9.6, 'экшен'],
+  ['Elden Ring', 'Elden Ring', 'game', 2022, 9.5, 'RPG'],
+  ['Baldur’s Gate 3', 'Baldur’s Gate 3', 'game', 2023, 9.6, 'RPG'],
+  ['Hollow Knight', 'Hollow Knight', 'game', 2017, 9.2, 'метроидвания'],
+  ['Cyberpunk 2077', 'Cyberpunk 2077', 'game', 2020, 8.6, 'RPG'],
+  ['Disco Elysium', 'Disco Elysium', 'game', 2019, 9.1, 'RPG'],
+  ['Hades', 'Hades', 'game', 2020, 9.0, 'рогалик'],
+  ['GTA V', 'Grand Theft Auto V', 'game', 2013, 9.5, 'экшен'],
+  ['Portal 2', 'Portal 2', 'game', 2011, 9.5, 'головоломка'],
+  ['Minecraft', 'Minecraft', 'game', 2011, 8.4, 'песочница'],
+  ['Persona 5', 'Persona 5', 'game', 2016, 9.2, 'JRPG']
+].map((r, id) => ({ id, title: r[0], orig: r[1], type: r[2], year: r[3], imdb: r[4], genre: r[5] }));
+
+/* Друзья-боты: смещение вкуса относительно IMDb и разброс */
+window.UWU_PEOPLE = [
+  { name: 'Kurome',      hue: 330, bias: -0.3, spread: 1.2, seen: 7,  coins: 1840, bio: 'Смотрю только сэйнэн. Чейнсо — шедевр.' },
+  { name: 'Senpai_404',  hue: 200, bias: 0.4,  spread: 0.9, seen: 2,  coins: 1210, bio: 'Ставлю 10 всему, где есть меха.' },
+  { name: 'Mikasa_kun',  hue: 10,  bias: -0.8, spread: 1.4, seen: 19, coins: 960,  bio: 'Критикую всё. Даже Шоушенка.' },
+  { name: 'Tomoe',       hue: 50,  bias: 0.1,  spread: 0.6, seen: 1,  coins: 2390, bio: 'Почти всегда угадываю IMDb. Почти.' },
+  { name: 'Rin.exe',     hue: 140, bias: 0.2,  spread: 1.1, seen: 40, coins: 720,  bio: 'Игры > сериалы. Hollow Knight навсегда.' },
+  { name: 'Yuki',        hue: 265, bias: -0.2, spread: 0.8, seen: 3,  coins: 1530, bio: 'Гибли, Синкай и чай.' },
+  { name: 'Hikaru',      hue: 290, bias: 0.6,  spread: 1.3, seen: 12, coins: 430,  bio: 'Новичок, не судите строго.' }
+];
