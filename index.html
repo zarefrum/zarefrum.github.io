@@ -166,6 +166,25 @@
   .browser img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
   .sites .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
+  /* media: winforms window (Mini-Access) */
+  .win { background: #1e2229; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); font: 13px var(--sans); }
+  .win-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--panel2); border-bottom: 1px solid var(--line); font-size: 13px; color: var(--dim); }
+  .win-bar b { font-weight: 500; color: var(--text); }
+  .win-ctl { display: flex; gap: 14px; color: var(--faint); font-family: var(--mono); }
+  .win-tabs { display: flex; gap: 2px; padding: 8px 10px 0; }
+  .win-tabs span { padding: 6px 12px; border: 1px solid var(--line); border-bottom: 0; border-radius: 6px 6px 0 0; color: var(--dim); }
+  .win-tabs span.on { background: var(--panel); color: var(--text); }
+  .win-body { background: var(--panel); border-top: 1px solid var(--line); padding: 10px; }
+  .win-tool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .win-tool span { padding: 5px 10px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel2); white-space: nowrap; }
+  .win-tool .combo { min-width: 120px; display: flex; justify-content: space-between; gap: 10px; color: var(--cyan); font-family: var(--mono); }
+  .win-tool .combo::after { content: "▾"; color: var(--dim); }
+  .win-grid { width: 100%; border-collapse: collapse; font: 12.5px var(--mono); font-variant-numeric: tabular-nums; }
+  .win-grid th { text-align: left; font-weight: 500; color: var(--dim); background: var(--panel2); }
+  .win-grid th, .win-grid td { border: 1px solid var(--line); padding: 5px 9px; }
+  .win-grid tr.sel td { background: rgba(87,199,255,.12); }
+  .win-sql { margin-top: 10px; font: 12px/1.7 var(--mono); color: var(--dim); }
+
   /* ---------- skills ---------- */
   .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .skill { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 22px 18px; }
@@ -375,6 +394,43 @@
           </div>
         </div>
       </article>
+
+      <!-- 05 Mini-Access -->
+      <article class="project reveal">
+        <div>
+          <div class="p-head"><span class="p-num">05</span><h3>Мини-Access</h3><span class="badge demo">код открыт</span></div>
+          <p class="p-sub">Настольная программа на C#, которая работает с базой MySQL как маленький Access: таблицы создаются и заполняются прямо из окна.</p>
+          <ul class="p-list">
+            <li>Список таблиц и просмотр данных в DataGridView</li>
+            <li>Диалог «Создать таблицу»: колонки, типы, первичный ключ → <code class="c">CREATE TABLE</code></li>
+            <li>Добавление строк через параметры <code class="c">@p0, @p1…</code>, удаление по PK</li>
+            <li>Генерация HTML-формы по схеме таблицы с живым предпросмотром в WebView2</li>
+          </ul>
+          <div class="tags"><span>C#</span><span>.NET 8</span><span>Windows Forms</span><span>MySQL</span><span>WebView2</span></div>
+          <div class="btns">
+            <a class="btn primary" href="mini-access/">Смотреть код ↗</a>
+            <a class="btn" href="mini-access/MiniAccess.zip" download>Скачать .zip</a>
+          </div>
+        </div>
+        <div class="media">
+          <div class="win" aria-label="Окно программы Мини-Access">
+            <div class="win-bar"><b>Мини-Access</b><span class="win-ctl"><span>—</span><span>☐</span><span>✕</span></span></div>
+            <div class="win-tabs"><span class="on">Таблицы</span><span>HTML-форма</span></div>
+            <div class="win-body">
+              <div class="win-tool"><span class="combo">students</span><span>Обновить</span><span>Создать таблицу</span><span>Добавить строку</span><span>Удалить строку</span></div>
+              <table class="win-grid">
+                <thead><tr><th>id</th><th>name</th><th>age</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>Артём</td><td>18</td></tr>
+                  <tr class="sel"><td>2</td><td>Полина</td><td>19</td></tr>
+                  <tr><td>3</td><td>Никита</td><td>18</td></tr>
+                </tbody>
+              </table>
+              <div class="win-sql"><span class="g">mysql&gt;</span> SHOW COLUMNS FROM `students`;</div>
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -385,7 +441,7 @@
       <div class="skills reveal">
         <div class="skill">
           <h4>языки</h4>
-          <ul><li>Python</li><li>JavaScript</li><li>HTML / CSS</li><li>SQL <span>(SQLite, PostgreSQL)</span></li></ul>
+          <ul><li>Python</li><li>JavaScript</li><li>C# <span>(WinForms)</span></li><li>HTML / CSS</li><li>SQL <span>(SQLite, PostgreSQL, MySQL)</span></li></ul>
         </div>
         <div class="skill">
           <h4>инструменты</h4>
@@ -434,7 +490,7 @@
       'В свободное время — <span class="a">Dota 2</span> и <span class="a">CS2</span>.'
     ] },
     { cmd: 'ls projects/', out: [
-      '<span class="ls"><a href="#projects">jarvis/</a><a href="#projects">circle-bot/</a><a href="#projects">pc-remote/</a><a href="#projects">landings/</a></span>'
+      '<span class="ls"><a href="#projects">jarvis/</a><a href="#projects">circle-bot/</a><a href="#projects">pc-remote/</a><a href="#projects">landings/</a><a href="mini-access/">mini-access/</a></span>'
     ] },
   ];
   const box = document.getElementById('typed');

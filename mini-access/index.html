@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мини-Access — zarefrum</title>
+<meta name="description" content="Мини-Access: Windows Forms + MySQL + WebView2. Исходный код проекта.">
+<link rel="icon" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f; --panel: #11151a; --panel2: #161b22; --line: #232a33;
+    --text: #d7dde5; --dim: #7d8794; --faint: #4a525d;
+    --green: #5af78e; --cyan: #57c7ff; --amber: #f3c969; --red: #ff6b6b; --violet: #c79bff;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --sans: "Golos Text", system-ui, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  ::selection { background: var(--green); color: var(--bg); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .g { color: var(--green); } .d { color: var(--dim); }
+  .top { position: sticky; top: 0; z-index: 10; background: rgba(10,12,15,.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 16px; }
+  .logo { font: 700 15px var(--mono); text-decoration: none; white-space: nowrap; }
+  .back { font: 14px var(--mono); color: var(--dim); text-decoration: none; }
+  .back:hover { color: var(--green); }
+  .hero { padding: 56px 0 28px; }
+  .crumb { font: 13px var(--mono); color: var(--faint); margin-bottom: 10px; }
+  h1 { font: 800 clamp(36px, 6vw, 64px)/1.05 var(--mono); letter-spacing: -.03em; margin: 0 0 14px; }
+  .lead { color: var(--dim); font-size: clamp(16px, 2vw, 19px); max-width: 680px; margin: 0 0 22px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tags span { font: 12.5px var(--mono); color: var(--dim); background: var(--panel2); border: 1px solid var(--line); padding: 4px 10px; border-radius: 6px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .btn { font: 500 14px var(--mono); text-decoration: none; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); cursor: pointer; transition: border-color .2s, color .2s; }
+  .btn:hover { border-color: var(--green); color: var(--green); }
+  .btn.primary { background: var(--green); color: var(--bg); border-color: var(--green); }
+  .btn.primary:hover { color: var(--bg); box-shadow: 0 0 24px rgba(90,247,142,.35); }
+  .btn:focus-visible, .tab:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  section { padding: 28px 0; }
+  .sec-title { font: 600 14px var(--mono); color: var(--dim); margin: 0 0 20px; display: flex; align-items: center; gap: 14px; }
+  .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .sec-title b { color: var(--green); font-weight: 600; }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; min-width: 0; }
+  .step h4 { margin: 0 0 8px; font: 600 14px var(--mono); color: var(--green); }
+  .step h4 span { color: var(--faint); }
+  .step p { margin: 0; color: var(--dim); font-size: 14.5px; }
+  .step code, .inline { font: 13px var(--mono); color: var(--text); background: var(--panel2); border: 1px solid var(--line); padding: 0 5px; border-radius: 4px; overflow-wrap: anywhere; }
+  .sql { font: 12.5px/1.6 var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 10px 0 0; overflow-x: auto; color: var(--text); }
+  .ide { display: grid; grid-template-columns: 230px minmax(0, 1fr); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); }
+  .files { border-right: 1px solid var(--line); background: var(--panel2); padding: 10px 0; display: flex; flex-direction: column; }
+  .files-label { font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); padding: 4px 16px 8px; }
+  .tab { all: unset; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; padding: 7px 16px; font: 13px var(--mono); color: var(--dim); border-left: 2px solid transparent; }
+  .tab:hover { color: var(--text); background: rgba(255,255,255,.03); }
+  .tab[aria-selected="true"] { color: var(--green); border-left-color: var(--green); background: rgba(90,247,142,.06); }
+  .lines { font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+  .panel { min-width: 0; }
+  .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .ph { min-width: 0; }
+  .path { font: 600 13px var(--mono); overflow-wrap: anywhere; }
+  .note { margin: 3px 0 0; color: var(--dim); font-size: 14px; }
+  .copy { white-space: nowrap; padding: 7px 14px; font-size: 13px; }
+  .copy.done { border-color: var(--green); color: var(--green); }
+  .code-wrap { overflow: auto; max-height: 72vh; background: var(--bg); }
+  pre { margin: 0; padding: 16px 18px; font: 13px/1.65 var(--mono); tab-size: 4; }
+  code { font-family: inherit; color: var(--text); }
+  .hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--violet); }
+  .hljs-string, .hljs-attr { color: var(--amber); }
+  .hljs-comment { color: var(--faint); font-style: italic; }
+  .hljs-title, .hljs-type, .hljs-name, .hljs-tag { color: var(--cyan); }
+  .hljs-number, .hljs-meta { color: var(--green); }
+  footer { padding: 40px 0 56px; color: var(--faint); font: 13px var(--mono); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: 1fr; }
+    .ide { grid-template-columns: minmax(0, 1fr); }
+    .files { flex-direction: row; overflow-x: auto; padding: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+    .files-label, .lines { display: none; }
+    .tab { white-space: nowrap; border-left: 0; border-bottom: 2px solid transparent; padding: 11px 14px; }
+    .tab[aria-selected="true"] { border-bottom-color: var(--green); }
+    .panel-head { flex-direction: column; }
+  }
+  @media (max-width: 560px) { .wrap { padding: 0 16px; } .hero { padding: 36px 0 20px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="../"><span class="g">zarefrum</span><span class="d">:~/mini-access$</span></a>
+    <a class="back" href="../#projects">← к проектам</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="crumb">projects/05 · практикум 2</div>
+      <h1><span class="g">Мини-</span>Access</h1>
+      <p class="lead">Настольное приложение на Windows Forms поверх MySQL: список таблиц, создание таблиц, добавление и удаление строк, генерация HTML-формы по схеме таблицы с живым предпросмотром в WebView2.</p>
+      <div class="tags"><span>C#</span><span>.NET 8</span><span>Windows Forms</span><span>MySQL</span><span>MySql.Data</span><span>WebView2</span></div>
+      <div class="btns">
+        <a class="btn primary" href="MiniAccess.zip" download>Скачать проект .zip</a>
+        <a class="btn" href="https://github.com/zarefrum/zarefrum.github.io/tree/main/mini-access/src" target="_blank" rel="noopener">Исходники на GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-title"><span><b>$</b> cat setup.txt</span></h2>
+      <div class="steps">
+        <div class="step"><h4><span>1.</span> база</h4>
+          <p>Запусти MySQL, в phpMyAdmin на вкладке SQL выполни:</p>
+          <pre class="sql">CREATE DATABASE IF NOT EXISTS mini_access
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</pre></div>
+        <div class="step"><h4><span>2.</span> проект</h4>
+          <p>Распакуй архив и открой <code>MiniAccess.csproj</code> в Visual Studio. Пакеты NuGet подтянутся сами. Или скопируй файлы ниже в свой проект <code>MiniAccess</code>.</p></div>
+        <div class="step"><h4><span>3.</span> запуск</h4>
+          <p>F5 → «Создать таблицу» <code>students</code>: <code>id</code> INT AUTO_INCREMENT + PK, <code>name</code> VARCHAR(100), <code>age</code> INT. При «Access denied» поправь <code>Pwd=</code> в <code>Db.cs</code>.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="sec-title"><span><b>$</b> ls src/</span></h2>
+      <div class="ide">
+        <nav class="files" role="tablist" aria-label="Файлы проекта">
+          <div class="files-label">MiniAccess</div>
+<button class="tab" role="tab" id="tab-0" aria-selected="true" aria-controls="panel-0" data-i="0"><span class="fname">Db.cs</span><span class="lines">107</span></button>
+<button class="tab" role="tab" id="tab-1" aria-selected="false" aria-controls="panel-1" data-i="1"><span class="fname">CreateTableForm.cs</span><span class="lines">78</span></button>
+<button class="tab" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" data-i="2"><span class="fname">AddRowForm.cs</span><span class="lines">34</span></button>
+<button class="tab" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" data-i="3"><span class="fname">Form1.cs</span><span class="lines">165</span></button>
+<button class="tab" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" data-i="4"><span class="fname">Form1.Designer.cs</span><span class="lines">278</span></button>
+<button class="tab" role="tab" id="tab-5" aria-selected="false" aria-controls="panel-5" data-i="5"><span class="fname">Program.cs</span><span class="lines">15</span></button>
+<button class="tab" role="tab" id="tab-6" aria-selected="false" aria-controls="panel-6" data-i="6"><span class="fname">MiniAccess.csproj</span><span class="lines">17</span></button>
+        </nav>
+        <div>
+<section class="panel" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/Db.cs</div><p class="note">Шаг 3. Подключение к MySQL и все запросы. Пароль MySQL меняется в ConnStr.</p></div>
+  <button class="btn copy" id="copy-0" data-i="0" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-0">using System;
+using System.Collections.Generic;
+using System.Data;
+using MySql.Data.MySqlClient;
+
+public static class Db
+{
+    // XAMPP/OpenServer: пользователь root, пароль обычно пустой.
+    // Если у вас другой пароль — впишите его после Pwd=
+    const string ConnStr =
+        &quot;Server=localhost;Port=3306;Database=mini_access;Uid=root;Pwd=;CharSet=utf8mb4;&quot;;
+
+    static MySqlConnection Open()
+    {
+        var c = new MySqlConnection(ConnStr);
+        c.Open();
+        return c;
+    }
+
+    public static List&lt;string&gt; ListTables()
+    {
+        var list = new List&lt;string&gt;();
+        using var con = Open();
+        var cmd = new MySqlCommand(&quot;SHOW TABLES&quot;, con);
+        using var r = cmd.ExecuteReader();
+        while (r.Read()) list.Add(r.GetString(0));
+        return list;
+    }
+
+    public class Column { public string Name, Type; public bool IsPk; }
+
+    public static List&lt;Column&gt; GetSchema(string table)
+    {
+        var cols = new List&lt;Column&gt;();
+        using var con = Open();
+        var cmd = new MySqlCommand(&quot;SHOW COLUMNS FROM `&quot; + table + &quot;`&quot;, con);
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+            cols.Add(new Column
+            {
+                Name = r.GetString(&quot;Field&quot;),
+                Type = r.GetString(&quot;Type&quot;),
+                IsPk = r.GetString(&quot;Key&quot;) == &quot;PRI&quot;
+            });
+        return cols;
+    }
+
+    public static string GetPk(string table)
+    {
+        foreach (var c in GetSchema(table)) if (c.IsPk) return c.Name;
+        return null;
+    }
+
+    public static void CreateTable(string name, List&lt;Column&gt; cols)
+    {
+        var defs = new List&lt;string&gt;();
+        string pkName = null;
+        foreach (var c in cols)
+        {
+            defs.Add(&quot;`&quot; + c.Name + &quot;` &quot; + c.Type);
+            if (c.IsPk) pkName = c.Name;
+        }
+        if (pkName != null) defs.Add(&quot;PRIMARY KEY(`&quot; + pkName + &quot;`)&quot;);
+        using var con = Open();
+        var cmd = new MySqlCommand(
+            &quot;CREATE TABLE `&quot; + name + &quot;` (&quot; + string.Join(&quot;, &quot;, defs) + &quot;)&quot;, con);
+        cmd.ExecuteNonQuery();
+    }
+
+    public static DataTable GetRows(string table)
+    {
+        var dt = new DataTable();
+        using var con = Open();
+        var da = new MySqlDataAdapter(&quot;SELECT * FROM `&quot; + table + &quot;`&quot;, con);
+        da.Fill(dt);
+        return dt;
+    }
+
+    public static void InsertRow(string table, Dictionary&lt;string, string&gt; values)
+    {
+        using var con = Open();
+        var keys = new List&lt;string&gt;(values.Keys);
+        var names = new List&lt;string&gt;();
+        var parms = new List&lt;string&gt;();
+        for (int i = 0; i &lt; keys.Count; i++)
+        {
+            names.Add(&quot;`&quot; + keys[i] + &quot;`&quot;);
+            parms.Add(&quot;@p&quot; + i);
+        }
+        var cmd = new MySqlCommand(
+            &quot;INSERT INTO `&quot; + table + &quot;` (&quot; + string.Join(&quot;,&quot;, names) + &quot;) &quot; +
+            &quot;VALUES (&quot; + string.Join(&quot;,&quot;, parms) + &quot;)&quot;, con);
+        for (int i = 0; i &lt; keys.Count; i++)
+            cmd.Parameters.AddWithValue(&quot;@p&quot; + i,
+                string.IsNullOrEmpty(values[keys[i]]) ? (object)DBNull.Value : values[keys[i]]);
+        cmd.ExecuteNonQuery();
+    }
+
+    public static void DeleteRow(string table, string pkCol, object pkValue)
+    {
+        using var con = Open();
+        var cmd = new MySqlCommand(
+            &quot;DELETE FROM `&quot; + table + &quot;` WHERE `&quot; + pkCol + &quot;` = @pk&quot;, con);
+        cmd.Parameters.AddWithValue(&quot;@pk&quot;, pkValue);
+        cmd.ExecuteNonQuery();
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/CreateTableForm.cs</div><p class="note">Шаг 4. Диалог «Создать таблицу».</p></div>
+  <button class="btn copy" id="copy-1" data-i="1" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-1">using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+
+public class CreateTableForm : Form
+{
+    public string TableName { get; private set; }
+    public List&lt;Db.Column&gt; Columns { get; } = new List&lt;Db.Column&gt;();
+
+    static readonly Regex NameRx = new Regex(&quot;^[A-Za-z_][A-Za-z0-9_]*$&quot;);
+
+    public CreateTableForm()
+    {
+        Text = &quot;Создать таблицу&quot;; Width = 520; Height = 440;
+        StartPosition = FormStartPosition.CenterParent;
+        FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false;
+
+        var lbl = new Label { Text = &quot;Имя таблицы:&quot;, Top = 10, Left = 10, Width = 200 };
+        var txt = new TextBox { Top = 30, Left = 10, Width = 480 };
+
+        var grid = new DataGridView
+        {
+            Top = 70, Left = 10, Width = 480, Height = 270,
+            AllowUserToAddRows = true,
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        };
+        grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = &quot;Имя колонки&quot;, Name = &quot;name&quot; });
+        var typeCol = new DataGridViewComboBoxColumn { HeaderText = &quot;Тип&quot;, Name = &quot;type&quot; };
+        typeCol.Items.AddRange(
+            &quot;INT AUTO_INCREMENT&quot;, &quot;INT&quot;, &quot;VARCHAR(100)&quot;, &quot;VARCHAR(255)&quot;,
+            &quot;TEXT&quot;, &quot;DECIMAL(10,2)&quot;, &quot;DATE&quot;, &quot;DATETIME&quot;);
+        grid.Columns.Add(typeCol);
+        grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = &quot;PK&quot;, Name = &quot;pk&quot;, FillWeight = 30 });
+
+        var btnOk = new Button { Text = &quot;OK&quot;, Top = 355, Left = 300, Width = 90 };
+        var btnNo = new Button { Text = &quot;Отмена&quot;, Top = 355, Left = 400, Width = 90, DialogResult = DialogResult.Cancel };
+
+        btnOk.Click += (s, e) =&gt;
+        {
+            grid.EndEdit();
+            TableName = txt.Text.Trim();
+            if (!NameRx.IsMatch(TableName))
+            {
+                MessageBox.Show(&quot;Имя таблицы: только латиница, цифры и _, не с цифры.&quot;);
+                return;
+            }
+
+            Columns.Clear();
+            int pkCount = 0;
+            foreach (DataGridViewRow row in grid.Rows)
+            {
+                if (row.IsNewRow) continue;
+                string name = row.Cells[&quot;name&quot;].Value?.ToString()?.Trim();
+                string type = row.Cells[&quot;type&quot;].Value?.ToString();
+                bool pk = row.Cells[&quot;pk&quot;].Value is bool b &amp;&amp; b;
+                if (string.IsNullOrEmpty(name) &amp;&amp; string.IsNullOrEmpty(type)) continue;
+
+                if (string.IsNullOrEmpty(name) || !NameRx.IsMatch(name))
+                { MessageBox.Show(&quot;Неверное имя колонки: &quot; + name); return; }
+                if (string.IsNullOrEmpty(type))
+                { MessageBox.Show(&quot;Не выбран тип у колонки &quot; + name); return; }
+
+                if (pk) pkCount++;
+                Columns.Add(new Db.Column { Name = name, Type = type, IsPk = pk });
+            }
+
+            if (Columns.Count == 0) { MessageBox.Show(&quot;Добавьте хотя бы одну колонку.&quot;); return; }
+            if (pkCount &gt; 1) { MessageBox.Show(&quot;PK может быть только у одной колонки.&quot;); return; }
+
+            DialogResult = DialogResult.OK; // закрывает диалог
+        };
+
+        Controls.Add(lbl); Controls.Add(txt); Controls.Add(grid);
+        Controls.Add(btnOk); Controls.Add(btnNo);
+        AcceptButton = btnOk; CancelButton = btnNo;
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/AddRowForm.cs</div><p class="note">Шаг 5. Диалог «Добавить строку».</p></div>
+  <button class="btn copy" id="copy-2" data-i="2" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-2">using System.Collections.Generic;
+using System.Windows.Forms;
+
+public class AddRowForm : Form
+{
+    public Dictionary&lt;string, string&gt; Values { get; } = new Dictionary&lt;string, string&gt;();
+
+    public AddRowForm(string table, List&lt;Db.Column&gt; cols)
+    {
+        Text = &quot;Добавить строку в &quot; + table; Width = 400; Height = 440;
+        StartPosition = FormStartPosition.CenterParent;
+        FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false;
+
+        var grid = new DataGridView
+        {
+            Top = 10, Left = 10, Width = 360, Height = 330,
+            AllowUserToAddRows = false,
+            AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        };
+        grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = &quot;Поле&quot;, Name = &quot;f&quot;, ReadOnly = true });
+        grid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = &quot;Значение&quot;, Name = &quot;v&quot; });
+        foreach (var c in cols) grid.Rows.Add(c.Name, &quot;&quot;);
+
+        var btn = new Button { Text = &quot;OK&quot;, Top = 355, Left = 280, Width = 90, DialogResult = DialogResult.OK };
+        btn.Click += (s, e) =&gt;
+        {
+            grid.EndEdit(); // фиксируем последнюю редактируемую ячейку
+            foreach (DataGridViewRow row in grid.Rows)
+                Values[row.Cells[&quot;f&quot;].Value?.ToString()] = row.Cells[&quot;v&quot;].Value?.ToString() ?? &quot;&quot;;
+        };
+
+        Controls.Add(grid); Controls.Add(btn); AcceptButton = btn;
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/Form1.cs</div><p class="note">Шаг 7. Логика главной формы.</p></div>
+  <button class="btn copy" id="copy-3" data-i="3" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-3">using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace MiniAccess
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            RefreshTables();
+            Load += Form1_Load;
+        }
+
+        // Асинхронная инициализация WebView2 — обязательно до NavigateToString
+        private async void Form1_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                await webView.EnsureCoreWebView2Async(null);
+                webView.NavigateToString(
+                    &quot;&lt;html&gt;&lt;body style=&#x27;font-family:sans-serif;color:#888&#x27;&gt;&quot; +
+                    &quot;Выберите таблицу и нажмите «Сгенерировать»&lt;/body&gt;&lt;/html&gt;&quot;);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    &quot;WebView2 не инициализировался: &quot; + ex.Message +
+                    &quot;\n\nУстановите Microsoft Edge WebView2 Runtime:\n&quot; +
+                    &quot;https://developer.microsoft.com/microsoft-edge/webview2/&quot;);
+            }
+        }
+
+        // ===== Вкладка «Таблицы» =====
+
+        private void RefreshTables()
+        {
+            List&lt;string&gt; tables;
+            try { tables = Db.ListTables(); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(&quot;Нет подключения к MySQL: &quot; + ex.Message +
+                    &quot;\n\nПроверьте, что MySQL запущен и ConnStr в Db.cs верный.&quot;);
+                return;
+            }
+            cbTables.Items.Clear(); cbTables.Items.AddRange(tables.ToArray());
+            cbTablesHtml.Items.Clear(); cbTablesHtml.Items.AddRange(tables.ToArray());
+            if (cbTables.Items.Count &gt; 0) cbTables.SelectedIndex = 0;
+            if (cbTablesHtml.Items.Count &gt; 0) cbTablesHtml.SelectedIndex = 0;
+        }
+
+        private void cbTables_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbTables.SelectedItem != null) LoadTable(cbTables.SelectedItem.ToString());
+        }
+
+        private void LoadTable(string table)
+        {
+            try { dgvData.DataSource = Db.GetRows(table); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, &quot;Ошибка&quot;); }
+            dgvData.ReadOnly = true;
+            dgvData.AllowUserToAddRows = false;
+            dgvData.AllowUserToDeleteRows = false;
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e) =&gt; RefreshTables();
+
+        private void btnCreateTable_Click(object sender, EventArgs e)
+        {
+            using var f = new CreateTableForm();
+            if (f.ShowDialog(this) != DialogResult.OK) return;
+            try
+            {
+                Db.CreateTable(f.TableName, f.Columns); RefreshTables();
+                cbTables.SelectedItem = f.TableName;
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, &quot;Ошибка&quot;); }
+        }
+
+        private void btnAddRow_Click(object sender, EventArgs e)
+        {
+            if (cbTables.SelectedItem == null) return;
+            var t = cbTables.SelectedItem.ToString();
+            using var f = new AddRowForm(t, Db.GetSchema(t));
+            if (f.ShowDialog(this) != DialogResult.OK) return;
+            try { Db.InsertRow(t, f.Values); LoadTable(t); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, &quot;Ошибка&quot;); }
+        }
+
+        private void btnDeleteRow_Click(object sender, EventArgs e)
+        {
+            if (cbTables.SelectedItem == null || dgvData.CurrentRow == null) return;
+            var t = cbTables.SelectedItem.ToString();
+            var pk = Db.GetPk(t);
+            if (pk == null) { MessageBox.Show(&quot;В таблице нет первичного ключа&quot;); return; }
+            if (MessageBox.Show(&quot;Удалить строку?&quot;, &quot;Подтверждение&quot;,
+                MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+            try
+            {
+                Db.DeleteRow(t, pk, dgvData.CurrentRow.Cells[pk].Value);
+                LoadTable(t);
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, &quot;Ошибка&quot;); }
+        }
+
+        // ===== Вкладка «HTML-форма» =====
+
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+            if (cbTablesHtml.SelectedItem == null) return;
+            string html = BuildHtml(cbTablesHtml.SelectedItem.ToString());
+            txtHtml.Text = html;
+            // Показываем HTML-страницу в браузерном движке (не как текст!)
+            if (webView.CoreWebView2 != null)
+                webView.NavigateToString(html);
+        }
+
+        private string BuildHtml(string table)
+        {
+            var cols = Db.GetSchema(table);
+            var sb = new StringBuilder();
+            sb.AppendLine(&quot;&lt;!DOCTYPE html&gt;&quot;);
+            sb.AppendLine(&quot;&lt;html lang=&#x27;ru&#x27;&gt;&lt;head&gt;&lt;meta charset=&#x27;utf-8&#x27;&gt;&quot;);
+            sb.AppendLine(&quot;&lt;title&gt;Форма: &quot; + table + &quot;&lt;/title&gt;&quot;);
+            sb.AppendLine(&quot;&lt;style&gt;body{font-family:sans-serif;margin:2em}&quot; +
+                          &quot;label{display:block;margin:.6em 0}input{width:300px;padding:.3em}&quot; +
+                          &quot;button{padding:.5em 1em}&lt;/style&gt;&quot;);
+            sb.AppendLine(&quot;&lt;/head&gt;&lt;body&gt;&quot;);
+            sb.AppendLine(&quot;&lt;h1&gt;Форма: &quot; + table + &quot;&lt;/h1&gt;&quot;);
+            sb.AppendLine(&quot;&lt;form method=&#x27;post&#x27; action=&#x27;save.php&#x27;&gt;&quot;);
+            foreach (var c in cols)
+            {
+                string t = c.Type.ToLowerInvariant();
+                string input =
+                    t.Contains(&quot;int&quot;) || t.Contains(&quot;decimal&quot;)
+                        ? &quot;&lt;input type=&#x27;number&#x27; step=&#x27;any&#x27; name=&#x27;&quot; + c.Name + &quot;&#x27;&gt;&quot;
+                        : t.Contains(&quot;date&quot;)
+                            ? &quot;&lt;input type=&#x27;date&#x27; name=&#x27;&quot; + c.Name + &quot;&#x27;&gt;&quot;
+                            : &quot;&lt;input type=&#x27;text&#x27; name=&#x27;&quot; + c.Name + &quot;&#x27;&gt;&quot;;
+                sb.AppendLine(&quot;&lt;label&gt;&quot; + c.Name + &quot;&lt;br&gt;&quot; + input + &quot;&lt;/label&gt;&quot;);
+            }
+            sb.AppendLine(&quot;&lt;button type=&#x27;submit&#x27;&gt;Отправить&lt;/button&gt;&quot;);
+            sb.AppendLine(&quot;&lt;/form&gt;&lt;/body&gt;&lt;/html&gt;&quot;);
+            return sb.ToString();
+        }
+
+        private void btnSaveHtml_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtHtml.Text)) return;
+            using var dlg = new SaveFileDialog
+            {
+                Filter = &quot;HTML (*.html)|*.html&quot;,
+                FileName = (cbTablesHtml.SelectedItem?.ToString() ?? &quot;form&quot;) + &quot;.html&quot;
+            };
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            File.WriteAllText(dlg.FileName, txtHtml.Text, Encoding.UTF8);
+            MessageBox.Show(&quot;Сохранено&quot;);
+        }
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/Form1.Designer.cs</div><p class="note">Шаг 6. Вкладки, кнопки, таблица и WebView2 уже расставлены, события привязаны. Лежит под Form1.cs в обозревателе решений.</p></div>
+  <button class="btn copy" id="copy-4" data-i="4" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-4">namespace MiniAccess
+{
+    partial class Form1
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing &amp;&amp; (components != null)) components.Dispose();
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        private void InitializeComponent()
+        {
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabTables = new System.Windows.Forms.TabPage();
+            this.dgvData = new System.Windows.Forms.DataGridView();
+            this.panelTablesTop = new System.Windows.Forms.Panel();
+            this.btnDeleteRow = new System.Windows.Forms.Button();
+            this.btnAddRow = new System.Windows.Forms.Button();
+            this.btnCreateTable = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.cbTables = new System.Windows.Forms.ComboBox();
+            this.tabHtml = new System.Windows.Forms.TabPage();
+            this.splitHtml = new System.Windows.Forms.SplitContainer();
+            this.txtHtml = new System.Windows.Forms.TextBox();
+            this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
+            this.panelHtmlTop = new System.Windows.Forms.Panel();
+            this.btnSaveHtml = new System.Windows.Forms.Button();
+            this.btnGenerate = new System.Windows.Forms.Button();
+            this.cbTablesHtml = new System.Windows.Forms.ComboBox();
+            this.tabControl1.SuspendLayout();
+            this.tabTables.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
+            this.panelTablesTop.SuspendLayout();
+            this.tabHtml.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitHtml)).BeginInit();
+            this.splitHtml.Panel1.SuspendLayout();
+            this.splitHtml.Panel2.SuspendLayout();
+            this.splitHtml.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
+            this.panelHtmlTop.SuspendLayout();
+            this.SuspendLayout();
+            //
+            // tabControl1
+            //
+            this.tabControl1.Controls.Add(this.tabTables);
+            this.tabControl1.Controls.Add(this.tabHtml);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = &quot;tabControl1&quot;;
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(900, 600);
+            this.tabControl1.TabIndex = 0;
+            //
+            // tabTables
+            //
+            this.tabTables.Controls.Add(this.dgvData);
+            this.tabTables.Controls.Add(this.panelTablesTop);
+            this.tabTables.Location = new System.Drawing.Point(4, 24);
+            this.tabTables.Name = &quot;tabTables&quot;;
+            this.tabTables.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTables.Size = new System.Drawing.Size(892, 572);
+            this.tabTables.TabIndex = 0;
+            this.tabTables.Text = &quot;Таблицы&quot;;
+            this.tabTables.UseVisualStyleBackColor = true;
+            //
+            // dgvData
+            //
+            this.dgvData.AllowUserToAddRows = false;
+            this.dgvData.AllowUserToDeleteRows = false;
+            this.dgvData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvData.Location = new System.Drawing.Point(3, 43);
+            this.dgvData.MultiSelect = false;
+            this.dgvData.Name = &quot;dgvData&quot;;
+            this.dgvData.ReadOnly = true;
+            this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvData.Size = new System.Drawing.Size(886, 526);
+            this.dgvData.TabIndex = 1;
+            //
+            // panelTablesTop
+            //
+            this.panelTablesTop.Controls.Add(this.btnDeleteRow);
+            this.panelTablesTop.Controls.Add(this.btnAddRow);
+            this.panelTablesTop.Controls.Add(this.btnCreateTable);
+            this.panelTablesTop.Controls.Add(this.btnRefresh);
+            this.panelTablesTop.Controls.Add(this.cbTables);
+            this.panelTablesTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTablesTop.Location = new System.Drawing.Point(3, 3);
+            this.panelTablesTop.Name = &quot;panelTablesTop&quot;;
+            this.panelTablesTop.Size = new System.Drawing.Size(886, 40);
+            this.panelTablesTop.TabIndex = 0;
+            //
+            // cbTables
+            //
+            this.cbTables.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbTables.Location = new System.Drawing.Point(6, 9);
+            this.cbTables.Name = &quot;cbTables&quot;;
+            this.cbTables.Size = new System.Drawing.Size(200, 23);
+            this.cbTables.TabIndex = 0;
+            this.cbTables.SelectedIndexChanged += new System.EventHandler(this.cbTables_SelectedIndexChanged);
+            //
+            // btnRefresh
+            //
+            this.btnRefresh.Location = new System.Drawing.Point(215, 8);
+            this.btnRefresh.Name = &quot;btnRefresh&quot;;
+            this.btnRefresh.Size = new System.Drawing.Size(100, 26);
+            this.btnRefresh.TabIndex = 1;
+            this.btnRefresh.Text = &quot;Обновить&quot;;
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            //
+            // btnCreateTable
+            //
+            this.btnCreateTable.Location = new System.Drawing.Point(321, 8);
+            this.btnCreateTable.Name = &quot;btnCreateTable&quot;;
+            this.btnCreateTable.Size = new System.Drawing.Size(130, 26);
+            this.btnCreateTable.TabIndex = 2;
+            this.btnCreateTable.Text = &quot;Создать таблицу&quot;;
+            this.btnCreateTable.UseVisualStyleBackColor = true;
+            this.btnCreateTable.Click += new System.EventHandler(this.btnCreateTable_Click);
+            //
+            // btnAddRow
+            //
+            this.btnAddRow.Location = new System.Drawing.Point(457, 8);
+            this.btnAddRow.Name = &quot;btnAddRow&quot;;
+            this.btnAddRow.Size = new System.Drawing.Size(130, 26);
+            this.btnAddRow.TabIndex = 3;
+            this.btnAddRow.Text = &quot;Добавить строку&quot;;
+            this.btnAddRow.UseVisualStyleBackColor = true;
+            this.btnAddRow.Click += new System.EventHandler(this.btnAddRow_Click);
+            //
+            // btnDeleteRow
+            //
+            this.btnDeleteRow.Location = new System.Drawing.Point(593, 8);
+            this.btnDeleteRow.Name = &quot;btnDeleteRow&quot;;
+            this.btnDeleteRow.Size = new System.Drawing.Size(130, 26);
+            this.btnDeleteRow.TabIndex = 4;
+            this.btnDeleteRow.Text = &quot;Удалить строку&quot;;
+            this.btnDeleteRow.UseVisualStyleBackColor = true;
+            this.btnDeleteRow.Click += new System.EventHandler(this.btnDeleteRow_Click);
+            //
+            // tabHtml
+            //
+            this.tabHtml.Controls.Add(this.splitHtml);
+            this.tabHtml.Controls.Add(this.panelHtmlTop);
+            this.tabHtml.Location = new System.Drawing.Point(4, 24);
+            this.tabHtml.Name = &quot;tabHtml&quot;;
+            this.tabHtml.Padding = new System.Windows.Forms.Padding(3);
+            this.tabHtml.Size = new System.Drawing.Size(892, 572);
+            this.tabHtml.TabIndex = 1;
+            this.tabHtml.Text = &quot;HTML-форма&quot;;
+            this.tabHtml.UseVisualStyleBackColor = true;
+            //
+            // splitHtml
+            //
+            this.splitHtml.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitHtml.Location = new System.Drawing.Point(3, 43);
+            this.splitHtml.Name = &quot;splitHtml&quot;;
+            this.splitHtml.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitHtml.Panel1.Controls.Add(this.txtHtml);
+            this.splitHtml.Panel2.Controls.Add(this.webView);
+            this.splitHtml.Size = new System.Drawing.Size(886, 526);
+            this.splitHtml.SplitterDistance = 200;
+            this.splitHtml.TabIndex = 1;
+            //
+            // txtHtml
+            //
+            this.txtHtml.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtHtml.Font = new System.Drawing.Font(&quot;Consolas&quot;, 11F);
+            this.txtHtml.Location = new System.Drawing.Point(0, 0);
+            this.txtHtml.Multiline = true;
+            this.txtHtml.Name = &quot;txtHtml&quot;;
+            this.txtHtml.ReadOnly = true;
+            this.txtHtml.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtHtml.Size = new System.Drawing.Size(886, 200);
+            this.txtHtml.TabIndex = 0;
+            this.txtHtml.WordWrap = false;
+            //
+            // webView
+            //
+            this.webView.AllowExternalDrop = true;
+            this.webView.CreationProperties = null;
+            this.webView.DefaultBackgroundColor = System.Drawing.Color.White;
+            this.webView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webView.Location = new System.Drawing.Point(0, 0);
+            this.webView.Name = &quot;webView&quot;;
+            this.webView.Size = new System.Drawing.Size(886, 322);
+            this.webView.TabIndex = 0;
+            this.webView.ZoomFactor = 1D;
+            //
+            // panelHtmlTop
+            //
+            this.panelHtmlTop.Controls.Add(this.btnSaveHtml);
+            this.panelHtmlTop.Controls.Add(this.btnGenerate);
+            this.panelHtmlTop.Controls.Add(this.cbTablesHtml);
+            this.panelHtmlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHtmlTop.Location = new System.Drawing.Point(3, 3);
+            this.panelHtmlTop.Name = &quot;panelHtmlTop&quot;;
+            this.panelHtmlTop.Size = new System.Drawing.Size(886, 40);
+            this.panelHtmlTop.TabIndex = 0;
+            //
+            // cbTablesHtml
+            //
+            this.cbTablesHtml.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbTablesHtml.Location = new System.Drawing.Point(6, 9);
+            this.cbTablesHtml.Name = &quot;cbTablesHtml&quot;;
+            this.cbTablesHtml.Size = new System.Drawing.Size(200, 23);
+            this.cbTablesHtml.TabIndex = 0;
+            //
+            // btnGenerate
+            //
+            this.btnGenerate.Location = new System.Drawing.Point(215, 8);
+            this.btnGenerate.Name = &quot;btnGenerate&quot;;
+            this.btnGenerate.Size = new System.Drawing.Size(130, 26);
+            this.btnGenerate.TabIndex = 1;
+            this.btnGenerate.Text = &quot;Сгенерировать&quot;;
+            this.btnGenerate.UseVisualStyleBackColor = true;
+            this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
+            //
+            // btnSaveHtml
+            //
+            this.btnSaveHtml.Location = new System.Drawing.Point(351, 8);
+            this.btnSaveHtml.Name = &quot;btnSaveHtml&quot;;
+            this.btnSaveHtml.Size = new System.Drawing.Size(110, 26);
+            this.btnSaveHtml.TabIndex = 2;
+            this.btnSaveHtml.Text = &quot;Сохранить...&quot;;
+            this.btnSaveHtml.UseVisualStyleBackColor = true;
+            this.btnSaveHtml.Click += new System.EventHandler(this.btnSaveHtml_Click);
+            //
+            // Form1
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(900, 600);
+            this.Controls.Add(this.tabControl1);
+            this.Name = &quot;Form1&quot;;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = &quot;Мини-Access&quot;;
+            this.tabControl1.ResumeLayout(false);
+            this.tabTables.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();
+            this.panelTablesTop.ResumeLayout(false);
+            this.tabHtml.ResumeLayout(false);
+            this.splitHtml.Panel1.ResumeLayout(false);
+            this.splitHtml.Panel1.PerformLayout();
+            this.splitHtml.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitHtml)).EndInit();
+            this.splitHtml.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
+            this.panelHtmlTop.ResumeLayout(false);
+            this.ResumeLayout(false);
+        }
+
+        #endregion
+
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabTables;
+        private System.Windows.Forms.TabPage tabHtml;
+        private System.Windows.Forms.Panel panelTablesTop;
+        private System.Windows.Forms.ComboBox cbTables;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnCreateTable;
+        private System.Windows.Forms.Button btnAddRow;
+        private System.Windows.Forms.Button btnDeleteRow;
+        private System.Windows.Forms.DataGridView dgvData;
+        private System.Windows.Forms.Panel panelHtmlTop;
+        private System.Windows.Forms.ComboBox cbTablesHtml;
+        private System.Windows.Forms.Button btnGenerate;
+        private System.Windows.Forms.Button btnSaveHtml;
+        private System.Windows.Forms.SplitContainer splitHtml;
+        private System.Windows.Forms.TextBox txtHtml;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView;
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-5" aria-labelledby="tab-5" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/Program.cs</div><p class="note">Точка входа. Обычно уже есть в проекте, менять не нужно.</p></div>
+  <button class="btn copy" id="copy-5" data-i="5" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-csharp" id="code-5">using System;
+using System.Windows.Forms;
+
+namespace MiniAccess
+{
+    internal static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            ApplicationConfiguration.Initialize();
+            Application.Run(new Form1());
+        }
+    }
+}</code></pre></div>
+</section>
+<section class="panel" role="tabpanel" id="panel-6" aria-labelledby="tab-6" hidden>
+  <div class="panel-head"><div class="ph"><div class="path">MiniAccess/MiniAccess.csproj</div><p class="note">Файл проекта с пакетами MySql.Data и Microsoft.Web.WebView2.</p></div>
+  <button class="btn copy" id="copy-6" data-i="6" type="button">Копировать</button></div>
+  <div class="code-wrap"><pre><code class="language-xml" id="code-6">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;WinExe&lt;/OutputType&gt;
+    &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+    &lt;Nullable&gt;disable&lt;/Nullable&gt;
+    &lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;
+    &lt;ImplicitUsings&gt;disable&lt;/ImplicitUsings&gt;
+    &lt;RootNamespace&gt;MiniAccess&lt;/RootNamespace&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;PackageReference Include=&quot;MySql.Data&quot; Version=&quot;8.4.0&quot; /&gt;
+    &lt;PackageReference Include=&quot;Microsoft.Web.WebView2&quot; Version=&quot;1.0.2903.40&quot; /&gt;
+  &lt;/ItemGroup&gt;
+
+&lt;/Project&gt;</code></pre></div>
+</section>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 zarefrum</span>
+    <a class="back" href="../">← zarefrum.github.io</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+  try { if (window.hljs) document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el)); } catch (e) {}
+  const tabs = [...document.querySelectorAll('.tab')];
+  function show(i) {
+    tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.i == i ? 'true' : 'false'));
+    document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== 'panel-' + i);
+  }
+  tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.i)));
+  document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', () => {
+    const code = document.getElementById('code-' + b.dataset.i);
+    const ok = () => { b.textContent = 'Скопировано'; b.classList.add('done'); setTimeout(() => { b.textContent = 'Копировать'; b.classList.remove('done'); }, 1800); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Выделено — Ctrl+C'; };
+    try { navigator.clipboard.writeText(code.textContent).then(ok, fallback); } catch (e) { fallback(); }
+  }));
+</script>
+</body>
+</html>
